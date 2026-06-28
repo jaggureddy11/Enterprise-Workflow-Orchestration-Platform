@@ -22,11 +22,18 @@ function createProxy(target: string, pathRewrite?: Record<string, string>) {
     on: {
       error: (err: Error, req, res) => {
         console.error(`[Gateway] Proxy error to ${target}:`, err.message);
-        if (!res.headersSent) {
-          res.status(502).json({
+        const response = res as any;
+        if (response && !response.headersSent && typeof response.status === 'function') {
+          response.status(502).json({
             success: false,
             error: { code: 'BAD_GATEWAY', message: 'Upstream service unavailable' },
           });
+        } else if (response && !response.headersSent && typeof response.writeHead === 'function') {
+          response.writeHead(502, { 'Content-Type': 'application/json' });
+          response.end(JSON.stringify({
+            success: false,
+            error: { code: 'BAD_GATEWAY', message: 'Upstream service unavailable' },
+          }));
         }
       },
     },

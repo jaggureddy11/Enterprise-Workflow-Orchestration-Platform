@@ -2,9 +2,9 @@
 
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
-import Redis from 'ioredis';
-import { AuthController } from '../controllers/auth.controller';
-import { AuthService } from '../services/auth.service';
+import { Redis } from 'ioredis';
+import { AuthController } from '../controllers/auth.controller.js';
+import { AuthService } from '../services/auth.service.js';
 
 export function createAuthRouter(prisma: PrismaClient, redis: Redis): Router {
   const router = Router();

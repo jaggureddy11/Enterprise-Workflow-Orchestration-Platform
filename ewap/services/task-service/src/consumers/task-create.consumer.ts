@@ -62,7 +62,7 @@ export async function startTaskCreateConsumer(prisma: PrismaClient): Promise<voi
       );
 
       // Emit task.created
-      await publishEvent(KAFKA_TOPICS.TASK_CREATED, {
+      await publishEvent<any>(KAFKA_TOPICS.TASK_CREATED, {
         eventType: 'task.created',
         tenantId,
         correlationId: instanceId,
@@ -83,7 +83,7 @@ export async function startTaskCreateConsumer(prisma: PrismaClient): Promise<voi
           assigneeId,
         );
         if (user) {
-          await publishEvent(KAFKA_TOPICS.NOTIFICATION_SEND_REQUESTED, {
+          await publishEvent<any>(KAFKA_TOPICS.NOTIFICATION_SEND_REQUESTED, {
             eventType: 'notification.send.requested',
             tenantId,
             correlationId: instanceId,

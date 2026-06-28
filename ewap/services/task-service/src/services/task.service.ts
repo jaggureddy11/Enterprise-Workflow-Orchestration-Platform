@@ -2,7 +2,7 @@
 // Task completion with distributed lock + optimistic locking per PRD §8.4
 
 import { PrismaClient } from '@prisma/client';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { publishEvent } from '@ewap/kafka-client';
 import {
   KAFKA_TOPICS,
@@ -11,7 +11,7 @@ import {
   OptimisticLockError,
   NotFoundError,
 } from '@ewap/shared';
-import type { CompleteTaskInput } from '@ewap/shared';
+import type { CompleteTaskInput, TaskCompletedEvent, TaskExpiredEvent } from '@ewap/shared';
 import { TaskLock } from '../locks/task.lock';
 import { kafkaEventsProcessed } from '@ewap/telemetry';
 
@@ -69,7 +69,7 @@ export class TaskService {
       }
 
       // Emit task.completed event per PRD §6.2
-      await publishEvent(KAFKA_TOPICS.TASK_COMPLETED, {
+      await publishEvent<TaskCompletedEvent>(KAFKA_TOPICS.TASK_COMPLETED, {
         eventType: 'task.completed',
         tenantId,
         correlationId: task.instance_id,
@@ -115,7 +115,7 @@ export class TaskService {
         task.id,
       );
 
-      await publishEvent(KAFKA_TOPICS.TASK_EXPIRED, {
+      await publishEvent<TaskExpiredEvent>(KAFKA_TOPICS.TASK_EXPIRED, {
         eventType: 'task.expired',
         tenantId,
         correlationId: task.instance_id,

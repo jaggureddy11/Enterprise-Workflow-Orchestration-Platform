@@ -4,7 +4,7 @@ initTelemetry('task-service');
 
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import pino from 'pino';
 import jwt from 'jsonwebtoken';
 import cron from 'node-cron';

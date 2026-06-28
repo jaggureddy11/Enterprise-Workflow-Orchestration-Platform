@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import logger from 'pino';
-import { ERROR_CODES } from '@ewap/shared';
+
 
 const pino = logger();
 
@@ -37,7 +37,7 @@ export function errorHandler(
     res.status(500).json({
       success: false,
       error: {
-        code: ERROR_CODES.INTERNAL_ERROR,
+        code: 'INTERNAL_ERROR',
         message: 'Internal server error',
       },
     });

@@ -2,9 +2,9 @@
 // Exponential backoff retry with DLQ promotion per PRD §8.5
 
 import { publishEvent } from '@ewap/kafka-client';
-import { KAFKA_TOPICS, calculateBackoffDelay } from '@ewap/shared';
+import { KAFKA_TOPICS, calculateBackoffDelay, getTenantSchemaName } from '@ewap/shared';
+import type { NotificationSentEvent, NotificationFailedDlqEvent, NotificationFailedEvent } from '@ewap/shared';
 import { PrismaClient } from '@prisma/client';
-import { getTenantSchemaName } from '@ewap/shared';
 import { sendEmail } from '../channels/email.channel';
 import { sendSlack } from '../channels/slack.channel';
 import { dlqEvents, notificationOutcomes } from '@ewap/telemetry';
@@ -50,7 +50,7 @@ export async function sendWithRetry(
 
     notificationOutcomes.inc({ channel: notification.channel, status: 'sent' });
 
-    await publishEvent(KAFKA_TOPICS.NOTIFICATION_SENT, {
+    await publishEvent<NotificationSentEvent>(KAFKA_TOPICS.NOTIFICATION_SENT, {
       eventType: 'notification.sent',
       tenantId,
       correlationId: notification.instanceId ?? '',
@@ -78,7 +78,7 @@ export async function sendWithRetry(
         notification.id,
       );
 
-      await publishEvent(KAFKA_TOPICS.NOTIFICATION_FAILED_DLQ, {
+      await publishEvent<NotificationFailedDlqEvent>(KAFKA_TOPICS.NOTIFICATION_FAILED_DLQ, {
         eventType: 'notification.failed.dlq',
         tenantId,
         correlationId: notification.instanceId ?? '',
@@ -106,7 +106,7 @@ export async function sendWithRetry(
         notification.id,
       );
 
-      await publishEvent(KAFKA_TOPICS.NOTIFICATION_FAILED, {
+      await publishEvent<NotificationFailedEvent>(KAFKA_TOPICS.NOTIFICATION_FAILED, {
         eventType: 'notification.failed',
         tenantId,
         correlationId: notification.instanceId ?? '',

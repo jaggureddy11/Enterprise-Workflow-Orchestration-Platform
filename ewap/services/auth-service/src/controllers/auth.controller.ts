@@ -3,7 +3,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../services/auth.service.js';
 import { ValidationError } from '@ewap/shared';
 
 // ─── Zod Schemas ─────────────────────────────────────────────────────────────

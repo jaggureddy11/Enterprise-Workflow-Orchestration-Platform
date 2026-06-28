@@ -1,7 +1,7 @@
 // services/task-service/src/locks/task.lock.ts
 // Redis distributed lock with Lua compare-and-delete per PRD §9.3
 
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { REDIS_KEYS, REDIS_TTL } from '@ewap/shared';
 
 const RELEASE_SCRIPT = `
@@ -26,9 +26,9 @@ export class TaskLock {
     const acquired = await this.redis.set(
       lockKey,
       lockValue,
-      'NX',
       'EX',
       REDIS_TTL.DISTRIBUTED_LOCK,
+      'NX'
     );
 
     return acquired ? lockValue : null;

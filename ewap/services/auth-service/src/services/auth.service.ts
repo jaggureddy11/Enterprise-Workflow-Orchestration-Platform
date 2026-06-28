@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaClient } from '@prisma/client';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import {
   JWTPayload,
   UserRole,
@@ -172,13 +172,13 @@ export class AuthService {
     const accessToken = jwt.sign(
       { ...claims, jti },
       process.env.JWT_ACCESS_SECRET!,
-      { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN ?? '15m' },
+      { expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN ?? '15m') as any },
     );
 
     const refreshToken = jwt.sign(
       { ...claims, jti: uuidv4() },
       process.env.JWT_REFRESH_SECRET!,
-      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? '7d' },
+      { expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN ?? '7d') as any },
     );
 
     return { accessToken, refreshToken };

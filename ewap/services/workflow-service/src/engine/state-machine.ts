@@ -59,7 +59,7 @@ export class WorkflowStateMachine {
     const lockValue = `start-${Date.now()}`;
 
     // Acquire distributed lock per PRD §9.3
-    const acquired = await this.redis.set(lockKey, lockValue, 'NX', 'EX', REDIS_TTL.DISTRIBUTED_LOCK);
+    const acquired = await this.redis.set(lockKey, lockValue, 'EX', REDIS_TTL.DISTRIBUTED_LOCK, 'NX');
     if (!acquired) {
       throw new ConflictError('Instance is being processed by another request');
     }
@@ -91,7 +91,7 @@ export class WorkflowStateMachine {
       }
 
       // Emit started event
-      await publishEvent(KAFKA_TOPICS.WORKFLOW_INSTANCE_STARTED, {
+      await publishEvent<any>(KAFKA_TOPICS.WORKFLOW_INSTANCE_STARTED, {
         eventType: 'workflow.instance.started',
         tenantId,
         correlationId: instanceId,
@@ -118,7 +118,7 @@ export class WorkflowStateMachine {
     const lockKey = REDIS_KEYS.WORKFLOW_INSTANCE_LOCK(instanceId);
     const lockValue = `advance-${Date.now()}`;
 
-    const acquired = await this.redis.set(lockKey, lockValue, 'NX', 'EX', REDIS_TTL.DISTRIBUTED_LOCK);
+    const acquired = await this.redis.set(lockKey, lockValue, 'EX', REDIS_TTL.DISTRIBUTED_LOCK, 'NX');
     if (!acquired) {
       throw new ConflictError('Instance is being processed by another request');
     }
@@ -214,7 +214,7 @@ export class WorkflowStateMachine {
       ? JSON.parse(instance.context)
       : instance.context;
 
-    await publishEvent(KAFKA_TOPICS.WORKFLOW_STEP_STARTED, {
+    await publishEvent<any>(KAFKA_TOPICS.WORKFLOW_STEP_STARTED, {
       eventType: 'workflow.step.started',
       tenantId,
       correlationId: instance.id,
@@ -260,7 +260,7 @@ export class WorkflowStateMachine {
         ? KAFKA_TOPICS.WORKFLOW_INSTANCE_COMPLETED
         : KAFKA_TOPICS.WORKFLOW_INSTANCE_FAILED;
 
-      await publishEvent(topic, {
+      await publishEvent<any>(topic, {
         eventType: status === 'COMPLETED' ? 'workflow.instance.completed' : 'workflow.instance.failed',
         tenantId,
         correlationId: instanceId,

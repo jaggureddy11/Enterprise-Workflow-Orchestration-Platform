@@ -2,8 +2,8 @@
 
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { UserController } from '../controllers/user.controller';
-import { requirePermission } from '../middleware/permission.middleware';
+import { UserController } from '../controllers/user.controller.js';
+import { requirePermission } from '../middleware/permission.middleware.js';
 
 export function createUserRouter(prisma: PrismaClient): Router {
   const router = Router();

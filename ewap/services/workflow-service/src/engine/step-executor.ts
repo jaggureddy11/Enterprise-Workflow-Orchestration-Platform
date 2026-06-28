@@ -46,7 +46,7 @@ export class StepExecutor {
       case 'CONDITION':
         // CONDITION steps are evaluated inline by the state machine, not dispatched
         // Emit step completed immediately so the SM can advance
-        await publishEvent(KAFKA_TOPICS.WORKFLOW_STEP_COMPLETED, {
+        await publishEvent<any>(KAFKA_TOPICS.WORKFLOW_STEP_COMPLETED, {
           eventType: 'workflow.step.completed',
           tenantId,
           correlationId: instance.id,
@@ -83,7 +83,7 @@ export class StepExecutor {
       assignee = parts.reduce((obj: any, key) => obj?.[key], context) as string ?? assignee;
     }
 
-    await publishEvent(KAFKA_TOPICS.TASK_CREATE_REQUESTED, {
+    await publishEvent<any>(KAFKA_TOPICS.TASK_CREATE_REQUESTED, {
       eventType: 'task.create.requested',
       tenantId,
       correlationId: instance.id,
@@ -106,7 +106,7 @@ export class StepExecutor {
   ): Promise<void> {
     const recipient = config.webhook ?? config.recipient ?? '';
 
-    await publishEvent(KAFKA_TOPICS.NOTIFICATION_SEND_REQUESTED, {
+    await publishEvent<any>(KAFKA_TOPICS.NOTIFICATION_SEND_REQUESTED, {
       eventType: 'notification.send.requested',
       tenantId,
       correlationId: instance.id,
@@ -125,7 +125,7 @@ export class StepExecutor {
       // Let state machine handle finalization via task.completed
     }
 
-    await publishEvent(KAFKA_TOPICS.WORKFLOW_STEP_COMPLETED, {
+    await publishEvent<any>(KAFKA_TOPICS.WORKFLOW_STEP_COMPLETED, {
       eventType: 'workflow.step.completed',
       tenantId,
       correlationId: instance.id,
@@ -146,7 +146,7 @@ export class StepExecutor {
     // For dev/staging: use setTimeout
     // For production: use Kafka delayed message or Redis scheduled job
     setTimeout(async () => {
-      await publishEvent(KAFKA_TOPICS.WORKFLOW_STEP_COMPLETED, {
+      await publishEvent<any>(KAFKA_TOPICS.WORKFLOW_STEP_COMPLETED, {
         eventType: 'workflow.step.completed',
         tenantId,
         correlationId: instance.id,
@@ -173,7 +173,7 @@ export class StepExecutor {
         body: JSON.stringify(config.body ?? {}),
       });
 
-      await publishEvent(KAFKA_TOPICS.WORKFLOW_STEP_COMPLETED, {
+      await publishEvent<any>(KAFKA_TOPICS.WORKFLOW_STEP_COMPLETED, {
         eventType: 'workflow.step.completed',
         tenantId,
         correlationId: instance.id,

@@ -2,7 +2,7 @@
 // RBAC permission checking per PRD §8.2
 
 import { ROLE_PERMISSIONS, UserRole } from '@ewap/shared';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { REDIS_KEYS, REDIS_TTL } from '@ewap/shared';
 
 export class RbacService {

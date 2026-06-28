@@ -4,7 +4,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { getTenantSchemaName, NotFoundError, ValidationError } from '@ewap/shared';
 import { TaskService } from '../services/task.service';
 
