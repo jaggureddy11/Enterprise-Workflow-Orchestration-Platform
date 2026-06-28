@@ -1,0 +1,42 @@
+# Build stage
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy monorepo config files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json tsconfig.base.json ./
+
+# Copy package.json files for lockfile installation
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/telemetry/package.json ./packages/telemetry/
+COPY packages/kafka-client/package.json ./packages/kafka-client/
+COPY services/api-gateway/package.json ./services/api-gateway/
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy source code
+COPY packages/shared ./packages/shared
+COPY packages/telemetry ./packages/telemetry
+COPY packages/kafka-client ./packages/kafka-client
+COPY services/api-gateway ./services/api-gateway
+
+# Build the service
+RUN pnpm run build --filter @ewap/api-gateway...
+
+# Production stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/services/api-gateway ./services/api-gateway
+
+WORKDIR /app/services/api-gateway
+EXPOSE 4000
+
+CMD ["node", "dist/index.js"]

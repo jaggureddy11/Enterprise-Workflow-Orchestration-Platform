@@ -1,0 +1,17 @@
+{{- range $serviceName, $serviceConfig := .Values.services }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: ewap-{{ kebabcase $serviceName }}
+  labels:
+    app: ewap-{{ kebabcase $serviceName }}
+spec:
+  ports:
+    - port: {{ $serviceConfig.port }}
+      targetPort: {{ $serviceConfig.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: ewap-{{ kebabcase $serviceName }}
+---
+{{- end }}

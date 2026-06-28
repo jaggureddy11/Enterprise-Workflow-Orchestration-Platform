@@ -1,8 +1,6 @@
 // services/ai-service/src/chains/workflow-generator.chain.ts
 // LangChain + GPT-4o-mini workflow generator per PRD §8.8
 
-import { ChatOpenAI } from '@langchain/openai';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { JsonOutputParser } from '@langchain/core/output_parsers';
 import { z } from 'zod';
 import { WORKFLOW_GENERATION_SYSTEM_PROMPT } from '../prompts/workflow-generation.prompt';
@@ -30,24 +28,30 @@ const WorkflowDefinitionOutputSchema = z.object({
 
 export type WorkflowDefinitionOutput = z.infer<typeof WorkflowDefinitionOutputSchema>;
 
+import { HuggingFaceInference } from '@langchain/community/llms/hf';
+import { PromptTemplate } from '@langchain/core/prompts';
+
 export class WorkflowGeneratorChain {
-  private llm: ChatOpenAI;
+  private llm: HuggingFaceInference;
 
   constructor() {
-    this.llm = new ChatOpenAI({
-      model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
-      temperature: 0,
-      openAIApiKey: process.env.OPENAI_API_KEY,
+    this.llm = new HuggingFaceInference({
+      model: process.env.HUGGINGFACE_MODEL ?? 'meta-llama/Meta-Llama-3-8B-Instruct',
+      temperature: 0.1,
+      apiKey: process.env.HUGGINGFACEHUB_API_KEY,
     });
   }
 
   async generate(userInput: string): Promise<WorkflowDefinitionOutput> {
     const parser = new JsonOutputParser<WorkflowDefinitionOutput>();
 
-    const chain = ChatPromptTemplate.fromMessages([
-      ['system', WORKFLOW_GENERATION_SYSTEM_PROMPT],
-      ['human', '{input}'],
-    ])
+    const template = `${WORKFLOW_GENERATION_SYSTEM_PROMPT}
+
+User Input: {input}
+    
+Please output JSON directly:`;
+
+    const chain = PromptTemplate.fromTemplate(template)
       .pipe(this.llm)
       .pipe(parser);
 

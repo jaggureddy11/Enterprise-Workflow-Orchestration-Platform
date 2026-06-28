@@ -1,0 +1,51 @@
+# Global configuration across all services
+global:
+  environment: production
+  replicaCount: 1
+  imagePullPolicy: IfNotPresent
+  postgres:
+    host: ewap-postgres
+    port: 5432
+    db: ewap
+    user: ewap
+    password: ewap_dev_pass
+  redis:
+    host: ewap-redis
+    port: 6379
+  kafka:
+    brokers: ewap-kafka:9092
+  elasticsearch:
+    url: http://ewap-elasticsearch:9200
+  jaeger:
+    endpoint: http://ewap-jaeger:4318/v1/traces
+
+# Service specific configurations
+services:
+  apiGateway:
+    image: ewap/api-gateway:latest
+    port: 4000
+    replicaCount: 2
+  authService:
+    image: ewap/auth-service:latest
+    port: 4001
+  workflowService:
+    image: ewap/workflow-service:latest
+    port: 4002
+  taskService:
+    image: ewap/task-service:latest
+    port: 4003
+  notificationService:
+    image: ewap/notification-service:latest
+    port: 4004
+  analyticsService:
+    image: ewap/analytics-service:latest
+    port: 4005
+  auditService:
+    image: ewap/audit-service:latest
+    port: 4007
+  aiService:
+    image: ewap/ai-service:latest
+    port: 4006
+  frontend:
+    image: ewap/frontend:latest
+    port: 80

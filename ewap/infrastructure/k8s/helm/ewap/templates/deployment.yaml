@@ -1,0 +1,49 @@
+{{- range $serviceName, $serviceConfig := .Values.services }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ewap-{{ kebabcase $serviceName }}
+  labels:
+    app: ewap-{{ kebabcase $serviceName }}
+spec:
+  replicas: {{ $serviceConfig.replicaCount | default $.Values.global.replicaCount }}
+  selector:
+    matchLabels:
+      app: ewap-{{ kebabcase $serviceName }}
+  template:
+    metadata:
+      labels:
+        app: ewap-{{ kebabcase $serviceName }}
+    spec:
+      containers:
+        - name: {{ kebabcase $serviceName }}
+          image: "{{ $serviceConfig.image }}"
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ $serviceConfig.port }}
+          env:
+            - name: NODE_ENV
+              value: "{{ $.Values.global.environment }}"
+            - name: PORT
+              value: "{{ $serviceConfig.port }}"
+            - name: DATABASE_URL
+              value: "postgresql://{{ $.Values.global.postgres.user }}:{{ $.Values.global.postgres.password }}@{{ $.Values.global.postgres.host }}:{{ $.Values.global.postgres.port }}/{{ $.Values.global.postgres.db }}?schema=public"
+            - name: REDIS_HOST
+              value: "{{ $.Values.global.redis.host }}"
+            - name: REDIS_PORT
+              value: "{{ $.Values.global.redis.port }}"
+            - name: KAFKA_BROKERS
+              value: "{{ $.Values.global.kafka.brokers }}"
+            - name: ELASTICSEARCH_NODE
+              value: "{{ $.Values.global.elasticsearch.url }}"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "{{ $.Values.global.jaeger.endpoint }}"
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+---
+{{- end }}
