@@ -15,15 +15,18 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 9
+        
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: Install pnpm
-      run: npm install -g pnpm
+        cache: 'pnpm'
       
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
@@ -43,11 +46,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Node.js 18
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 18
+        cache: 'npm'
+        cache-dependency-path: e2e/package-lock.json
         
     - name: Install dependencies
       working-directory: ./e2e
