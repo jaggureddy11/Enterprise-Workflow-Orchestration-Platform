@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "pnpm run --parallel --filter './services/*' --filter './frontend' dev",
     "build": "pnpm run --recursive --workspace-concurrency 1 --sort build",
-    "test": "pnpm run --recursive test",
+    "test": "NODE_OPTIONS=--experimental-vm-modules pnpm run --recursive test",
     "lint": "pnpm run --recursive lint",
     "typecheck": "pnpm run --recursive typecheck",
     "clean": "pnpm run --recursive clean && rm -rf node_modules",
