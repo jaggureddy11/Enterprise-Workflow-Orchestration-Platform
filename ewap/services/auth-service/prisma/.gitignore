@@ -1,0 +1,3 @@
+# Environment file - don't commit
+.env
+.env.local

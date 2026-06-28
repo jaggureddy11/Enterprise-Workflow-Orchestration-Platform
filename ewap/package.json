@@ -1,0 +1,26 @@
+{
+  "name": "ewap",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enterprise Workflow Automation Platform - Monorepo",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm run --parallel --filter './services/*' --filter './frontend' dev",
+    "build": "pnpm run --recursive --workspace-concurrency 1 --sort build",
+    "test": "pnpm run --recursive test",
+    "lint": "pnpm run --recursive lint",
+    "typecheck": "pnpm run --recursive typecheck",
+    "clean": "pnpm run --recursive clean && rm -rf node_modules",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

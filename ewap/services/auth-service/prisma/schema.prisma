@@ -1,0 +1,33 @@
+// services/auth-service/prisma/schema.prisma
+// Full Prisma schema for auth-service per PRD §5
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Public Schema Models ────────────────────────────────────────────────────
+// Note: Prisma cannot natively switch schemas per-request.
+// We use $executeRaw to SET search_path before tenant-specific queries.
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  plan      String   @default("FREE")   // FREE | STARTER | PRO | ENTERPRISE
+  status    String   @default("ACTIVE") // ACTIVE | SUSPENDED | DELETED
+  settings  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("tenants")
+}
+
+// Note: tenant-scoped tables (users, workflows, tasks, etc.) are created 
+// dynamically via raw SQL migrations when a new tenant is registered.
+// They cannot be modeled in Prisma's static schema.
+// The auth-service uses $queryRaw / $executeRaw for all tenant-scoped queries.
