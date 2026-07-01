@@ -39,7 +39,7 @@ export class TaskService {
     try {
       // Get current task with version
       const [task] = await this.prisma.$queryRawUnsafe<any[]>(
-        `SELECT id, status, version, instance_id, step_id FROM "${schemaName}".tasks WHERE id = $1`,
+        `SELECT id, status, version, instance_id, step_id FROM "${schemaName}".tasks WHERE id = $1::uuid`,
         taskId,
       );
 
@@ -53,9 +53,9 @@ export class TaskService {
       // Optimistic lock update per PRD §9.2
       const result = await this.prisma.$queryRawUnsafe<any[]>(
         `UPDATE "${schemaName}".tasks
-         SET status = $1, completed_by = $2, completed_at = NOW(),
+         SET status = $1, completed_by = $2::uuid, completed_at = NOW(),
              form_data = $3::jsonb, version = version + 1, updated_at = NOW()
-         WHERE id = $4 AND status IN ('OPEN', 'IN_PROGRESS') AND version = $5
+         WHERE id = $4::uuid AND status IN ('OPEN', 'IN_PROGRESS') AND version = $5
          RETURNING id`,
         decision === 'REJECTED' ? 'REJECTED' : 'COMPLETED',
         userId,
@@ -111,7 +111,7 @@ export class TaskService {
 
     for (const task of expiredTasks) {
       await this.prisma.$executeRawUnsafe(
-        `UPDATE "${schemaName}".tasks SET status = 'EXPIRED', updated_at = NOW() WHERE id = $1`,
+        `UPDATE "${schemaName}".tasks SET status = 'EXPIRED', updated_at = NOW() WHERE id = $1::uuid`,
         task.id,
       );
 

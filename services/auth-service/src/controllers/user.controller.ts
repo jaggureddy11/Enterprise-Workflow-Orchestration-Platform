@@ -63,7 +63,7 @@ export class UserController {
 
       const [user] = await this.prisma.$queryRawUnsafe<any[]>(
         `INSERT INTO "${schemaName}".users (email, password_hash, first_name, last_name, role, department, manager_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, email, first_name, last_name, role, created_at`,
+         VALUES ($1, $2, $3, $4, $5, $6, $7::uuid) RETURNING id, email, first_name, last_name, role, created_at`,
         input.data.email,
         passwordHash,
         input.data.firstName,
@@ -87,7 +87,7 @@ export class UserController {
 
       const [user] = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT id, email, first_name, last_name, role, department, manager_id, is_active, created_at
-         FROM "${schemaName}".users WHERE id = $1`,
+         FROM "${schemaName}".users WHERE id = $1::uuid`,
         id,
       );
 
@@ -114,7 +114,7 @@ export class UserController {
              last_name = COALESCE($2, last_name),
              department = COALESCE($3, department),
              updated_at = NOW()
-         WHERE id = $4
+         WHERE id = $4::uuid
          RETURNING id, email, first_name, last_name, role, department`,
         input.data.firstName ?? null,
         input.data.lastName ?? null,
@@ -137,7 +137,7 @@ export class UserController {
       const { id } = req.params;
 
       await this.prisma.$executeRawUnsafe(
-        `UPDATE "${schemaName}".users SET is_active = FALSE, updated_at = NOW() WHERE id = $1`,
+        `UPDATE "${schemaName}".users SET is_active = FALSE, updated_at = NOW() WHERE id = $1::uuid`,
         id,
       );
 
@@ -159,7 +159,7 @@ export class UserController {
       if (!input.success) throw new ValidationError('Invalid role');
 
       await this.prisma.$executeRawUnsafe(
-        `UPDATE "${schemaName}".users SET role = $1, updated_at = NOW() WHERE id = $2`,
+        `UPDATE "${schemaName}".users SET role = $1, updated_at = NOW() WHERE id = $2::uuid`,
         input.data.role,
         id,
       );

@@ -76,7 +76,7 @@ export class StepExecutor {
     step: any, instance: any, config: any, context: Record<string, unknown>, tenantId: string,
   ): Promise<void> {
     // Resolve context variables in assignee field
-    let assignee = config.assignee as string;
+    let assignee = (config.assigneeValue ?? config.assignee ?? '') as string;
     if (assignee.startsWith('{{') && assignee.endsWith('}}')) {
       const path = assignee.slice(2, -2).trim(); // e.g. "context.employee.managerId"
       const parts = path.split('.').slice(1); // remove "context" prefix

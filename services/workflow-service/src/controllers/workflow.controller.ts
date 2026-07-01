@@ -63,7 +63,7 @@ export class WorkflowController {
 
       const [workflow] = await this.prisma.$queryRawUnsafe<any[]>(
         `INSERT INTO "${schemaName}".workflows (name, description, trigger_type, trigger_config, definition, created_by)
-         VALUES ($1, $2, $3, $4::jsonb, $5::jsonb, $6) RETURNING *`,
+         VALUES ($1, $2, $3, $4::jsonb, $5::jsonb, $6::uuid) RETURNING *`,
         input.data.name,
         input.data.description ?? null,
         input.data.triggerType,
@@ -76,7 +76,7 @@ export class WorkflowController {
       for (const step of input.data.definition.steps) {
         await this.prisma.$executeRawUnsafe(
           `INSERT INTO "${schemaName}".workflow_steps (workflow_id, step_order, name, step_type, config, is_terminal)
-           VALUES ($1, $2, $3, $4, $5::jsonb, $6)`,
+           VALUES ($1::uuid, $2, $3, $4, $5::jsonb, $6)`,
           workflow.id,
           step.order,
           step.name,
@@ -108,7 +108,7 @@ export class WorkflowController {
         `SELECT w.*, json_agg(s ORDER BY s.step_order) as steps
          FROM "${schemaName}".workflows w
          LEFT JOIN "${schemaName}".workflow_steps s ON s.workflow_id = w.id
-         WHERE w.id = $1 GROUP BY w.id`,
+         WHERE w.id = $1::uuid GROUP BY w.id`,
         id,
       );
 
@@ -127,7 +127,7 @@ export class WorkflowController {
       const { id } = req.params;
 
       const [existing] = await this.prisma.$queryRawUnsafe<any[]>(
-        `SELECT id, status FROM "${schemaName}".workflows WHERE id = $1`,
+        `SELECT id, status FROM "${schemaName}".workflows WHERE id = $1::uuid`,
         id,
       );
       if (!existing) throw new NotFoundError('Workflow', id);
@@ -137,8 +137,8 @@ export class WorkflowController {
         `UPDATE "${schemaName}".workflows
          SET name = COALESCE($1, name),
              description = COALESCE($2, description),
-             updated_by = $3, updated_at = NOW()
-         WHERE id = $4 RETURNING *`,
+             updated_by = $3::uuid, updated_at = NOW()
+         WHERE id = $4::uuid RETURNING *`,
         req.body.name ?? null,
         req.body.description ?? null,
         userId,
@@ -159,8 +159,8 @@ export class WorkflowController {
       const { id } = req.params;
 
       const [updated] = await this.prisma.$queryRawUnsafe<any[]>(
-        `UPDATE "${schemaName}".workflows SET status = 'ACTIVE', updated_by = $1, updated_at = NOW()
-         WHERE id = $2 AND status = 'DRAFT' RETURNING *`,
+        `UPDATE "${schemaName}".workflows SET status = 'ACTIVE', updated_by = $1::uuid, updated_at = NOW()
+         WHERE id = $2::uuid AND status = 'DRAFT' RETURNING *`,
         userId,
         id,
       );
@@ -180,7 +180,7 @@ export class WorkflowController {
       const { id } = req.params;
 
       await this.prisma.$executeRawUnsafe(
-        `UPDATE "${schemaName}".workflows SET status = 'ARCHIVED', updated_at = NOW() WHERE id = $1`,
+        `UPDATE "${schemaName}".workflows SET status = 'ARCHIVED', updated_at = NOW() WHERE id = $1::uuid`,
         id,
       );
 
@@ -197,7 +197,7 @@ export class WorkflowController {
       const { id } = req.params;
 
       const [workflow] = await this.prisma.$queryRawUnsafe<any[]>(
-        `SELECT * FROM "${schemaName}".workflows WHERE id = $1 AND status = 'ACTIVE'`,
+        `SELECT * FROM "${schemaName}".workflows WHERE id = $1::uuid AND status = 'ACTIVE'`,
         id,
       );
       if (!workflow) throw new NotFoundError('Active Workflow', id);
@@ -206,7 +206,7 @@ export class WorkflowController {
       const [instance] = await this.prisma.$queryRawUnsafe<any[]>(
         `INSERT INTO "${schemaName}".workflow_instances
          (workflow_id, workflow_version, status, triggered_by, trigger_data, context)
-         VALUES ($1, $2, 'PENDING', $3, $4::jsonb, $5::jsonb) RETURNING *`,
+         VALUES ($1::uuid, $2, 'PENDING', $3::uuid, $4::jsonb, $5::jsonb) RETURNING *`,
         workflow.id,
         workflow.version,
         userId,

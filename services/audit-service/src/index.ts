@@ -77,7 +77,7 @@ async function recordAuditLog(event: any, schemaName: string): Promise<void> {
   await prisma.$executeRawUnsafe(
     `INSERT INTO "${schemaName}".audit_logs
      (event_type, actor_id, actor_email, resource_type, resource_id, metadata, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6::jsonb, NOW())`,
+     VALUES ($1, $2::uuid, $3, $4, $5::uuid, $6::jsonb, NOW())`,
     event.eventType,
     payload.triggeredBy ?? payload.completedBy ?? payload.actorId ?? null,
     payload.actorEmail ?? null,

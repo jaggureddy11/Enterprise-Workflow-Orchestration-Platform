@@ -61,7 +61,7 @@ app.get('/analytics/workflows/:id', async (req, res, next) => {
 
     const snapshots = await prisma.$queryRawUnsafe<any[]>(
       `SELECT * FROM "${schemaName}".analytics_snapshots
-       WHERE workflow_id = $1 AND snapshot_date >= NOW() - INTERVAL '${days} days'
+       WHERE workflow_id = $1::uuid AND snapshot_date >= NOW() - INTERVAL '${days} days'
        ORDER BY snapshot_date DESC`,
       id,
     );
@@ -73,7 +73,7 @@ app.get('/analytics/workflows/:id', async (req, res, next) => {
          COUNT(*) FILTER (WHERE status = 'FAILED') as failed_instances,
          AVG(EXTRACT(EPOCH FROM (completed_at - started_at)) * 1000) as avg_duration_ms
        FROM "${schemaName}".workflow_instances
-       WHERE workflow_id = $1 AND created_at >= NOW() - INTERVAL '${days} days'`,
+       WHERE workflow_id = $1::uuid AND created_at >= NOW() - INTERVAL '${days} days'`,
       id,
     );
 
@@ -143,7 +143,7 @@ async function start() {
         // Upsert analytics snapshot for today
         await prisma.$executeRawUnsafe(`
           INSERT INTO "${schemaName}".analytics_snapshots (workflow_id, snapshot_date, total_instances, completed_instances, failed_instances)
-          VALUES ($1, $2, 1, $3, $4)
+          VALUES ($1::uuid, $2::date, 1, $3, $4)
           ON CONFLICT (workflow_id, snapshot_date) DO UPDATE SET
             total_instances = analytics_snapshots.total_instances + 1,
             completed_instances = analytics_snapshots.completed_instances + $3,

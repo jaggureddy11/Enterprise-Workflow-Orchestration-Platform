@@ -60,7 +60,7 @@ export class TaskController {
       const { id } = req.params;
 
       const [task] = await this.prisma.$queryRawUnsafe<any[]>(
-        `SELECT * FROM "${schemaName}".tasks WHERE id = $1`,
+        `SELECT * FROM "${schemaName}".tasks WHERE id = $1::uuid`,
         id,
       );
       if (!task) throw new NotFoundError('Task', id);
@@ -110,7 +110,7 @@ export class TaskController {
       const { assigneeId } = req.body;
 
       await this.prisma.$executeRawUnsafe(
-        `UPDATE "${schemaName}".tasks SET assignee_id = $1, updated_at = NOW() WHERE id = $2`,
+        `UPDATE "${schemaName}".tasks SET assignee_id = $1::uuid, updated_at = NOW() WHERE id = $2::uuid`,
         assigneeId,
         id,
       );
@@ -136,7 +136,7 @@ export class TaskController {
 
       await this.prisma.$executeRawUnsafe(
         `UPDATE "${schemaName}".tasks
-         SET comments = comments || $1::jsonb, updated_at = NOW() WHERE id = $2`,
+         SET comments = comments || $1::jsonb, updated_at = NOW() WHERE id = $2::uuid`,
         JSON.stringify([comment]),
         id,
       );

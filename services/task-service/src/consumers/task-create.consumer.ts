@@ -50,7 +50,7 @@ export async function startTaskCreateConsumer(prisma: PrismaClient): Promise<voi
       const [task] = await prisma.$queryRawUnsafe<any[]>(
         `INSERT INTO "${schemaName}".tasks
          (instance_id, step_id, title, description, status, priority, assignee_id, assignee_role, due_at)
-         VALUES ($1, $2, $3, $4, 'OPEN', $5, $6, $7, $8) RETURNING *`,
+         VALUES ($1::uuid, $2::uuid, $3, $4, 'OPEN', $5, $6::uuid, $7, $8) RETURNING *`,
         instanceId,
         stepId,
         title,
@@ -79,7 +79,7 @@ export async function startTaskCreateConsumer(prisma: PrismaClient): Promise<voi
       // Emit notification for assignee
       if (assigneeId) {
         const [user] = await prisma.$queryRawUnsafe<any[]>(
-          `SELECT email FROM "${schemaName}".users WHERE id = $1`,
+          `SELECT email FROM "${schemaName}".users WHERE id = $1::uuid`,
           assigneeId,
         );
         if (user) {

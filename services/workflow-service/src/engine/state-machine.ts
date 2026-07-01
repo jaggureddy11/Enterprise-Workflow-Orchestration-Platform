@@ -69,7 +69,7 @@ export class WorkflowStateMachine {
       const [instance] = await this.prisma.$queryRawUnsafe<any[]>(
         `UPDATE "${this.schemaName}".workflow_instances
          SET status = 'RUNNING', started_at = NOW(), updated_at = NOW(), version = version + 1
-         WHERE id = $1 AND status = 'PENDING'
+         WHERE id = $1::uuid AND status = 'PENDING'
          RETURNING *`,
         instanceId,
       );
@@ -81,7 +81,7 @@ export class WorkflowStateMachine {
       // Get the first step
       const [firstStep] = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT * FROM "${this.schemaName}".workflow_steps
-         WHERE workflow_id = $1 ORDER BY step_order ASC LIMIT 1`,
+         WHERE workflow_id = $1::uuid ORDER BY step_order ASC LIMIT 1`,
         instance.workflow_id,
       );
 
@@ -125,7 +125,7 @@ export class WorkflowStateMachine {
 
     try {
       const [instance] = await this.prisma.$queryRawUnsafe<any[]>(
-        `SELECT * FROM "${this.schemaName}".workflow_instances WHERE id = $1`,
+        `SELECT * FROM "${this.schemaName}".workflow_instances WHERE id = $1::uuid`,
         instanceId,
       );
 
@@ -134,7 +134,7 @@ export class WorkflowStateMachine {
       }
 
       const [currentStep] = await this.prisma.$queryRawUnsafe<any[]>(
-        `SELECT * FROM "${this.schemaName}".workflow_steps WHERE id = $1`,
+        `SELECT * FROM "${this.schemaName}".workflow_steps WHERE id = $1::uuid`,
         stepResult.stepId,
       );
 
@@ -156,7 +156,7 @@ export class WorkflowStateMachine {
       const nextStepOrder = currentStep.step_order + 1;
       let [nextStep] = await this.prisma.$queryRawUnsafe<any[]>(
         `SELECT * FROM "${this.schemaName}".workflow_steps
-         WHERE workflow_id = $1 AND step_order = $2`,
+         WHERE workflow_id = $1::uuid AND step_order = $2`,
         currentStep.workflow_id,
         nextStepOrder,
       );
@@ -177,7 +177,7 @@ export class WorkflowStateMachine {
 
         [nextStep] = await this.prisma.$queryRawUnsafe<any[]>(
           `SELECT * FROM "${this.schemaName}".workflow_steps
-           WHERE workflow_id = $1 AND step_order = $2`,
+           WHERE workflow_id = $1::uuid AND step_order = $2`,
           currentStep.workflow_id,
           branchOrder,
         );
@@ -192,8 +192,8 @@ export class WorkflowStateMachine {
       // Advance current step pointer with optimistic lock
       const updateResult = await this.prisma.$queryRawUnsafe<any[]>(
         `UPDATE "${this.schemaName}".workflow_instances
-         SET current_step_id = $1, version = version + 1, updated_at = NOW()
-         WHERE id = $2 AND status = 'RUNNING'
+         SET current_step_id = $1::uuid, version = version + 1, updated_at = NOW()
+         WHERE id = $2::uuid AND status = 'RUNNING'
          RETURNING id`,
         nextStep.id,
         instanceId,
@@ -249,7 +249,7 @@ export class WorkflowStateMachine {
       `UPDATE "${this.schemaName}".workflow_instances
        SET status = $1, ${column} = NOW(), failure_reason = $2,
            version = version + 1, updated_at = NOW()
-       WHERE id = $3`,
+       WHERE id = $3::uuid`,
       status,
       failureReason ?? null,
       instanceId,
