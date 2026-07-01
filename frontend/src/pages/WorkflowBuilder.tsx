@@ -26,13 +26,30 @@ export function WorkflowBuilder() {
   const queryClient = useQueryClient();
   const [name, setName] = useState('Employee Onboarding');
   const [description, setDescription] = useState('Automated onboarding workflow');
-  const [nodes, setNodes] = useState<Node[]>([{
-    id: '1',
-    data: { label: 'Manager Approval' },
-    position: { x: 0, y: 0 },
-    style: { padding: 16, borderRadius: 12, background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderLeft: '4px solid #2563eb', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)', fontWeight: 500 },
-  }]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodes, setNodes] = useState<Node[]>([
+    {
+      id: '1',
+      data: { label: 'Start Application' },
+      position: { x: 50, y: 50 },
+      style: { padding: 16, borderRadius: 12, background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderLeft: '4px solid #10b981', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)', fontWeight: 500 },
+    },
+    {
+      id: '2',
+      data: { label: 'Manager Approval' },
+      position: { x: 50, y: 150 },
+      style: { padding: 16, borderRadius: 12, background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderLeft: '4px solid #3b82f6', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)', fontWeight: 500 },
+    },
+    {
+      id: '3',
+      data: { label: 'Provision Accounts' },
+      position: { x: 50, y: 250 },
+      style: { padding: 16, borderRadius: 12, background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderLeft: '4px solid #6366f1', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)', fontWeight: 500 },
+    }
+  ]);
+  const [edges, setEdges] = useState<Edge[]>([
+    { id: 'e1-2', source: '1', target: '2', animated: true, style: { stroke: '#94a3b8' } },
+    { id: 'e2-3', source: '2', target: '3', animated: true, style: { stroke: '#94a3b8' } },
+  ]);
   const [stepType, setStepType] = useState('TASK');
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
