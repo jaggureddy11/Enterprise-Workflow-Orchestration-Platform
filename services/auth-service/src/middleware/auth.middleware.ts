@@ -19,9 +19,18 @@ export function verifyJWT(req: Request, res: Response, next: NextFunction): void
     }
 
     const token = authHeader.slice(7);
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as any;
     
-    const payload = decoded as unknown as JWTPayload;
+    const metadata = decoded.user_metadata || decoded.app_metadata || {};
+    const payload = {
+      ...decoded,
+      sub: decoded.sub,
+      email: decoded.email,
+      tenantId: decoded.tenantId || metadata.tenantId || metadata.tenant_id,
+      tenantSlug: decoded.tenantSlug || metadata.tenantSlug || metadata.tenant_slug,
+      role: decoded.role || metadata.role || 'MEMBER',
+    } as unknown as JWTPayload;
+    
     req.user = payload;
     req.tenantId = payload.tenantId;
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/client';
+import { supabase } from '../utils/supabase';
 import { useAuthStore } from '../store/auth.store';
 
 export function Login() {
@@ -16,11 +16,21 @@ export function Login() {
     setError('');
 
     try {
-      const response = await api.post('/auth/login', { email, password, tenantSlug });
-      setToken(response.data.data.accessToken);
-      navigate('/');
-    } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      if (data.session) {
+        setToken(data.session.access_token);
+        navigate('/');
+      } else {
+        throw new Error('No session returned');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please check your credentials.');
     }
   };
 

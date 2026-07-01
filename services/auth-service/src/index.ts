@@ -54,8 +54,16 @@ app.use('/users', (req, res, next) => {
   }
 
   try {
-    const payload = jwt.verify(authHeader.substring(7), process.env.JWT_ACCESS_SECRET!);
-    (req as any).user = payload;
+    const decoded = jwt.verify(authHeader.substring(7), process.env.JWT_ACCESS_SECRET!) as any;
+    const metadata = decoded.user_metadata || decoded.app_metadata || {};
+    (req as any).user = {
+      ...decoded,
+      sub: decoded.sub,
+      email: decoded.email,
+      tenantId: decoded.tenantId || metadata.tenantId || metadata.tenant_id,
+      tenantSlug: decoded.tenantSlug || metadata.tenantSlug || metadata.tenant_slug,
+      role: decoded.role || metadata.role || 'MEMBER',
+    };
     next();
   } catch {
     res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid or expired token' } });

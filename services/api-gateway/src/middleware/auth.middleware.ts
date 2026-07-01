@@ -26,16 +26,28 @@ export function createJwtMiddleware(redis: Redis) {
     const token = authHeader.substring(7);
 
     try {
-      const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as JWTPayload;
+      const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as any;
+      const metadata = decoded.user_metadata || decoded.app_metadata || {};
+      const payload = {
+        ...decoded,
+        sub: decoded.sub,
+        email: decoded.email,
+        tenantId: decoded.tenantId || metadata.tenantId || metadata.tenant_id,
+        tenantSlug: decoded.tenantSlug || metadata.tenantSlug || metadata.tenant_slug,
+        role: decoded.role || metadata.role || 'MEMBER',
+      } as unknown as JWTPayload;
 
-      // Check blacklist
-      const blacklisted = await redis.get(`blacklist:token:${payload.jti}`);
-      if (blacklisted) {
-        res.status(401).json({
-          success: false,
-          error: { code: 'UNAUTHORIZED', message: 'Token has been revoked' },
-        });
-        return;
+      // Check blacklist (if jti exists, Supabase JWT has jti/id)
+      const tokenIdentifier = payload.jti || (payload as any).id;
+      if (tokenIdentifier) {
+        const blacklisted = await redis.get(`blacklist:token:${tokenIdentifier}`);
+        if (blacklisted) {
+          res.status(401).json({
+            success: false,
+            error: { code: 'UNAUTHORIZED', message: 'Token has been revoked' },
+          });
+          return;
+        }
       }
 
       (req as any).user = payload;
