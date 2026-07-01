@@ -105,7 +105,7 @@ export class AuthService {
 
     // Update last_login_at
     await this.prisma.$executeRawUnsafe(
-      `UPDATE "${schemaName}".users SET last_login_at = NOW() WHERE id = $1`,
+      `UPDATE "${schemaName}".users SET last_login_at = NOW() WHERE id = $1::uuid`,
       user.id,
     );
 
