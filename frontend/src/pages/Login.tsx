@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/auth.store';
 export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [tenantSlug, setTenantSlug] = useState('acme');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const setToken = useAuthStore((state) => state.setToken);
@@ -15,7 +16,7 @@ export function Login() {
     setError('');
 
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password, tenantSlug });
       setToken(response.data.data.accessToken);
       navigate('/');
     } catch (err) {
@@ -29,6 +30,10 @@ export function Login() {
         <h1 className="section-title">Sign In</h1>
         <p>Access your enterprise workflow dashboard.</p>
         <form className="grid" onSubmit={handleSubmit}>
+          <label>
+            Tenant Slug
+            <input className="input" type="text" value={tenantSlug} onChange={(e) => setTenantSlug(e.target.value)} required />
+          </label>
           <label>
             Email
             <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
