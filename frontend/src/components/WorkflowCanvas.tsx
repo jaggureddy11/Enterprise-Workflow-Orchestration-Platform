@@ -35,7 +35,7 @@ export function WorkflowCanvas({ nodes, edges, setNodes, setEdges }: WorkflowCan
   );
 
   return (
-    <div style={{ width: '100%', height: '560px', borderRadius: 18, overflow: 'hidden', background: '#020617' }}>
+    <div style={{ width: '100%', height: '560px', borderRadius: 18, overflow: 'hidden', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
       <ReactFlow nodes={nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} fitView>
         <Background gap={16} />
         <Controls />

@@ -30,7 +30,7 @@ export function WorkflowBuilder() {
     id: '1',
     data: { label: 'Manager Approval' },
     position: { x: 0, y: 0 },
-    style: { padding: 16, borderRadius: 12, background: '#1e293b', color: '#e2e8f0', border: '1px solid #3b82f6' },
+    style: { padding: 16, borderRadius: 12, background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderLeft: '4px solid #2563eb', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)', fontWeight: 500 },
   }]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [stepType, setStepType] = useState('TASK');
@@ -72,7 +72,7 @@ export function WorkflowBuilder() {
       id: nextId,
       data: { label: `Step ${nextId}` },
       position: { x: nodes.length * 180, y: 100 },
-      style: { padding: 16, borderRadius: 12, background: '#111827', color: '#fff', border: '1px solid #38bdf8' },
+      style: { padding: 16, borderRadius: 12, background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', borderLeft: '4px solid #10b981', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)', fontWeight: 500 },
     };
     setNodes((prev) => [...prev, nextStep]);
   };

@@ -33,9 +33,9 @@ export function Dashboard() {
             { title: 'Total Instances', value: data?.total_instances ?? 0 },
             { title: 'Overdue Tasks', value: data?.overdue_tasks ?? 0 },
           ].map((item) => (
-            <div key={item.title} className="page-card" style={{ background: 'rgba(15,23,42,0.9)' }}>
-              <p style={{ color: '#94a3b8', marginBottom: 8 }}>{item.title}</p>
-              <p style={{ fontSize: 32, fontWeight: 700 }}>{item.value}</p>
+            <div key={item.title} className="page-card">
+              <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 8px 0', fontSize: '0.875rem', fontWeight: 500 }}>{item.title}</p>
+              <p style={{ fontSize: '2rem', fontWeight: 700, margin: 0, color: 'var(--color-text-primary)' }}>{item.value}</p>
             </div>
           ))
         )}
