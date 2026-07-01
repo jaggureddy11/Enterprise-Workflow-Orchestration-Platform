@@ -97,100 +97,98 @@ export function Login() {
   };
 
   return (
-    <div className="main-content" style={{ maxWidth: 520, margin: '0 auto', paddingTop: 80 }}>
-      <div className="page-card">
-        {/* Navigation Tabs */}
-        <div style={{ display: 'flex', gap: 16, marginBottom: 24, borderBottom: '1px solid rgba(148, 163, 184, 0.12)', paddingBottom: 12 }}>
-          <button
-            onClick={() => { setIsRegistering(false); setError(''); setSuccess(''); }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: !isRegistering ? '#3b82f6' : '#94a3b8',
-              fontWeight: 600,
-              fontSize: '1.1rem',
-              cursor: 'pointer',
-              padding: '4px 8px',
-              borderBottom: !isRegistering ? '2px solid #3b82f6' : 'none',
-            }}
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => { setIsRegistering(true); setError(''); setSuccess(''); }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: isRegistering ? '#3b82f6' : '#94a3b8',
-              fontWeight: 600,
-              fontSize: '1.1rem',
-              cursor: 'pointer',
-              padding: '4px 8px',
-              borderBottom: isRegistering ? '2px solid #3b82f6' : 'none',
-            }}
-          >
-            Register Tenant
-          </button>
-        </div>
-
-        {!isRegistering ? (
-          <>
-            <h1 className="section-title">Sign In</h1>
-            <p>Access your enterprise workflow dashboard.</p>
-            <form className="grid" onSubmit={handleSignIn}>
-              <label>
-                Email
-                <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </label>
-              <label>
-                Password
-                <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </label>
-              {error && <p style={{ color: '#fb7185' }}>{error}</p>}
-              {success && <p style={{ color: '#34d399' }}>{success}</p>}
-              <button type="submit" className="button">Sign In</button>
-            </form>
-          </>
-        ) : (
-          <>
-            <h1 className="section-title">Register Tenant</h1>
-            <p>Setup a new enterprise workspace & admin account.</p>
-            <form className="grid" onSubmit={handleRegister}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <label>
-                  First Name
-                  <input className="input" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                </label>
-                <label>
-                  Last Name
-                  <input className="input" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-                </label>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <label>
-                  Tenant Name
-                  <input className="input" type="text" placeholder="e.g. Acme Corporation" value={tenantName} onChange={(e) => setTenantName(e.target.value)} required />
-                </label>
-                <label>
-                  Tenant Slug
-                  <input className="input" type="text" placeholder="e.g. acme" value={tenantSlug} onChange={(e) => setTenantSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} required />
-                </label>
-              </div>
-              <label>
-                Email Address
-                <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </label>
-              <label>
-                Password
-                <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </label>
-              {error && <p style={{ color: '#fb7185' }}>{error}</p>}
-              {success && <p style={{ color: '#34d399' }}>{success}</p>}
-              <button type="submit" className="button">Create Workspace & Account</button>
-            </form>
-          </>
-        )}
+    <div className="page-card">
+      {/* Navigation Tabs */}
+      <div style={{ display: 'flex', gap: 16, marginBottom: 24, borderBottom: '1px solid rgba(148, 163, 184, 0.12)', paddingBottom: 12 }}>
+        <button
+          onClick={() => { setIsRegistering(false); setError(''); setSuccess(''); }}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: !isRegistering ? '#3b82f6' : '#94a3b8',
+            fontWeight: 600,
+            fontSize: '1.1rem',
+            cursor: 'pointer',
+            padding: '4px 8px',
+            borderBottom: !isRegistering ? '2px solid #3b82f6' : 'none',
+          }}
+        >
+          Sign In
+        </button>
+        <button
+          onClick={() => { setIsRegistering(true); setError(''); setSuccess(''); }}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: isRegistering ? '#3b82f6' : '#94a3b8',
+            fontWeight: 600,
+            fontSize: '1.1rem',
+            cursor: 'pointer',
+            padding: '4px 8px',
+            borderBottom: isRegistering ? '2px solid #3b82f6' : 'none',
+          }}
+        >
+          Register Tenant
+        </button>
       </div>
+
+      {!isRegistering ? (
+        <>
+          <h1 className="section-title">Sign In</h1>
+          <p>Access your enterprise workflow dashboard.</p>
+          <form className="grid" onSubmit={handleSignIn}>
+            <label>
+              Email
+              <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </label>
+            <label>
+              Password
+              <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </label>
+            {error && <p style={{ color: '#fb7185' }}>{error}</p>}
+            {success && <p style={{ color: '#34d399' }}>{success}</p>}
+            <button type="submit" className="button">Sign In</button>
+          </form>
+        </>
+      ) : (
+        <>
+          <h1 className="section-title">Register Tenant</h1>
+          <p>Setup a new enterprise workspace & admin account.</p>
+          <form className="grid" onSubmit={handleRegister}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <label>
+                First Name
+                <input className="input" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+              </label>
+              <label>
+                Last Name
+                <input className="input" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+              </label>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <label>
+                Tenant Name
+                <input className="input" type="text" placeholder="e.g. Acme Corporation" value={tenantName} onChange={(e) => setTenantName(e.target.value)} required />
+              </label>
+              <label>
+                Tenant Slug
+                <input className="input" type="text" placeholder="e.g. acme" value={tenantSlug} onChange={(e) => setTenantSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} required />
+              </label>
+            </div>
+            <label>
+              Email Address
+              <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </label>
+            <label>
+              Password
+              <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </label>
+            {error && <p style={{ color: '#fb7185' }}>{error}</p>}
+            {success && <p style={{ color: '#34d399' }}>{success}</p>}
+            <button type="submit" className="button">Create Workspace & Account</button>
+          </form>
+        </>
+      )}
     </div>
   );
 }

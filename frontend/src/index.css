@@ -130,3 +130,16 @@ textarea {
   background: rgba(16, 185, 129, 0.12);
   color: #7dd3fc;
 }
+
+.auth-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.auth-content {
+  width: 100%;
+  max-width: 520px;
+}

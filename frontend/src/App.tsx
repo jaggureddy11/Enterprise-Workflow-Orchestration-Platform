@@ -13,9 +13,9 @@ export default function App() {
   const navigate = useNavigate();
 
   return (
-    <div className="app-shell">
+    <div className={token ? "app-shell" : "auth-shell"}>
       {token ? <Navigation /> : null}
-      <main className="main-content">
+      <main className={token ? "main-content" : "auth-content"}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={token ? <Dashboard /> : <Navigate to="/login" replace />} />
